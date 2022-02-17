@@ -4,10 +4,10 @@ const input1 = document.querySelector('.input1')
 const input2 = document.querySelector('.input2')
 const select = document.querySelector('select')
 
-let week = document.querySelector('.week')
-let month = document.querySelector('.month')
-let quarter = document.querySelector('.quarter')
-let year = document.querySelector('.year')
+const week = document.querySelector('.week')
+const month = document.querySelector('.month')
+const quarter = document.querySelector('.quarter')
+const year = document.querySelector('.year')
 
 week.addEventListener('click', () => period(-1, `week`))
 month.addEventListener('click', () => period(-1, `month`))
@@ -26,7 +26,7 @@ function input() {
 }
 
 function period(n, m) {
-    let before = dayjs().add(n, m).format('YYYY-MM-DD')
+    const before = dayjs().add(n, m).format('YYYY-MM-DD')
     worker2(select.value, before, today)
 }
 
@@ -66,15 +66,15 @@ const mapping = {
 
 function getCur(result) {
     deleteTr()
-    let firstCur = result.filter((el) => {
+    const el = result.filter((el) => {
         return el.Cur_ID == select.value
     })[0];
-    input1.min = firstCur.Cur_DateStart.slice(0,10)
-    input1.max = firstCur.Cur_DateEnd.slice(0,10)
-    input2.min = firstCur.Cur_DateStart.slice(0,10)
-    input2.max = firstCur.Cur_DateEnd.slice(0,10)
-    count = firstCur.Cur_QuotName
-    worker2(firstCur.Cur_ID, firstCur.Cur_DateStart, firstCur.Cur_DateEnd)
+    input1.min = el.Cur_DateStart.slice(0,10)
+    input1.max = el.Cur_DateEnd.slice(0,10)
+    input2.min = el.Cur_DateStart.slice(0,10)
+    input2.max = el.Cur_DateEnd.slice(0,10)
+    count = el.Cur_QuotName
+    worker2(el.Cur_ID, el.Cur_DateStart, el.Cur_DateEnd)
 }
 
 
@@ -91,7 +91,7 @@ worker2.postMessage({
     dataEnd: end
 });
 worker2.addEventListener('message', ({data}) => {
-    let rateArr = {data}.data;
+    const rateArr = {data}.data;
     rateArr.forEach((json) => {
         createTr(`${json.Date.slice(0,10)}`, ` ${count} ` + ` ${json.Cur_OfficialRate} ` + `BYN`)
         })
@@ -113,6 +113,6 @@ function createTr (el1, el2) {
 }
 
 function deleteTr() {
-    let tr = document.querySelectorAll('td');
+    const tr = document.querySelectorAll('td');
     tr.forEach( e => e.remove('tr'))
 }
