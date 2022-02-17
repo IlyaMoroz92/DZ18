@@ -1,0 +1,55 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    width: 80%;
+    margin:  0 auto;
+}
+
+.tb {
+    width: 80%;
+    margin:  0 auto;
+}
+
+input {
+    margin: 0 20px;
+    cursor: pointer;
+}
+
+p {
+    margin: 15px;
+}
+
+select, button {
+    margin: 15px;
+}
+
+main {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+table {
+    width: 500px;
+    border: 1px solid black;
+    border-spacing: 0px;
+    border-collapse: collapse;
+
+}
+
+td {
+    text-align: center;
+    border: 1px solid black;
+    border-spacing: 0px;
+    width: 50%;
+}
+
+th {
+    border: 1px solid black;
+    width: 50%;
+}
