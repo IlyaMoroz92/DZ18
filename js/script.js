@@ -18,16 +18,17 @@ select.addEventListener('change', deleteTr)
 input1.addEventListener('change', input)
 input2.addEventListener('change', input)
 
+const chart2 = document.getElementById('chart_div')
 
 function input() {
     if(input1.value&&input2.value) {
-        worker2(select.value, input1.value, input2.value)
+        workerTwo(select.value, input1.value, input2.value)
     }
 }
 
 function period(n, m) {
     const before = dayjs().add(n, m).format('YYYY-MM-DD')
-    worker2(select.value, before, today)
+    workerTwo(select.value, before, today)
 }
 
 const worker = new Worker('/js/worker.js')
@@ -74,7 +75,7 @@ function getCur(result) {
     input2.min = el.Cur_DateStart.slice(0,10)
     input2.max = el.Cur_DateEnd.slice(0,10)
     count = el.Cur_QuotName
-    worker2(el.Cur_ID, el.Cur_DateStart, el.Cur_DateEnd)
+    workerTwo(el.Cur_ID, el.Cur_DateStart, el.Cur_DateEnd)
 }
 
 
@@ -82,20 +83,34 @@ worker.addEventListener('message', ({data}) => {
     mapping[data.msg](data.payload);
 });
 
-function worker2(idCur, start, end) {
-deleteTr()
+let arrCurs 
 const worker2 = new Worker('/js/worker2.js')
+
+function workerTwo(idCur, start, end) {
+
+deleteTr()
+
 worker2.postMessage({
     id: idCur,
     dataStart: start,
     dataEnd: end
 });
+
+}
+
 worker2.addEventListener('message', ({data}) => {
-    const rateArr = {data}.data;
+    workerData({data}.data)
+})
+
+function workerData(el) {
+    let rateArr = el;
     rateArr.forEach((json) => {
-        createTr(`${json.Date.slice(0,10)}`, ` ${count} ` + ` ${json.Cur_OfficialRate} ` + `BYN`)
-        })
+    createTr(`${json.Date.slice(0,10)}`, ` ${count} ` + ` ${json.Cur_OfficialRate} ` + `BYN`)
     })
+    arrCurs = [];
+    console.log(arrCurs);
+    rateArr.forEach(el => arrCurs.push([new Date(el.Date), el.Cur_OfficialRate]))
+    createChart()
 }
 
 function createTr (el1, el2) {
@@ -114,5 +129,30 @@ function createTr (el1, el2) {
 
 function deleteTr() {
     const tr = document.querySelectorAll('td');
-    tr.forEach( e => e.remove('tr'))
+    tr.forEach(e => e.remove('tr'))
+}
+
+
+function createChart() {
+    chart2.innerHTML = '';
+    google.charts.load('current', {packages: ['corechart', 'line']});
+    google.charts.setOnLoadCallback(drawBackgroundColor);
+}
+
+function drawBackgroundColor() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('datetime', 'X');
+    data.addColumn('number', 'Rate');
+    data.addRows(arrCurs);
+    var options = {
+        hAxis: {
+        title: 'Дата'
+        },
+        vAxis: {
+        title: 'Курс'
+        },
+        backgroundColor: '#fff'
+    };
+    var chart = new google.visualization.LineChart(chart2);
+    chart.draw(data, options);
 }
